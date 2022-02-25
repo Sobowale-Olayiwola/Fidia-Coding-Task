@@ -13,8 +13,6 @@ const resolvers = require("./src/data/resolvers");
 const { typeDefs } = require("./src/data/schema");
 const rateLimit = require("express-rate-limit");
 
-let PORT = process.env.APP_PORT || 4000;
-
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
@@ -58,10 +56,8 @@ async function startServer() {
       optionsSuccessStatus: 204,
     },
   });
-  app.listen(PORT, () => {
-    console.log(
-      `🚀 Server Listening on PORT ${PORT} http://localhost:${PORT}${apolloServer.graphqlPath}`
-    );
+  app.listen(process.env.PORT || 4000, () => {
+    console.log(`🚀 Server Listening on PORT ${process.env.PORT || 4000}`);
   });
 }
 startServer();
