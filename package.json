@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -r dotenv/config index.js",
+    "start": "node -r dotenv/config index.js",
     "test": "nyc  --reporter=text-summary --check-coverage=true mocha --recursive -c ",
     "test:detail": "nyc  --reporter=text --check-coverage=true mocha --recursive -c",
     "test:coverage": "nyc --reporter=html --check-coverage=true mocha --recursive -c || true",
