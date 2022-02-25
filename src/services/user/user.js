@@ -48,7 +48,7 @@ class UserService extends RootService {
               html: `
               <h1>Resend Email Confirmation Link</h1>
               <p>Thank you for your registration on Fidia. Kindly resend your email verification link by clicking on the following link below</p>
-              <a href=${process.env.BASE_URL}/users/resend-email-verification?userId=${decode.userId}> Click here</a>
+              <a href=${process.env.BASE_URL}/api/v1/users/resend-email-verification?userId=${decode.userId}> Click here</a>
               </div> 
             `,
             },
