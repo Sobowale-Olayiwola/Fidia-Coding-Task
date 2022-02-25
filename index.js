@@ -13,7 +13,7 @@ const resolvers = require("./src/data/resolvers");
 const { typeDefs } = require("./src/data/schema");
 const rateLimit = require("express-rate-limit");
 
-let PORT = process.env.APP_PORT || 3000;
+let PORT = process.env.APP_PORT || 4000;
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
