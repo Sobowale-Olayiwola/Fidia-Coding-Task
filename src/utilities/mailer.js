@@ -193,7 +193,7 @@ const htmlTemplates = ({ user, emailContent }) => {
                           <table border="0" cellpadding="0" cellspacing="0">
                             <tr>
                               <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
-                                <a href="http://localhost:4000/api/v1/users/verify-email?verificationToken=${emailContent.verificationToken}" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Click Here</a>
+                                <a href="${process.env.BASE_URL}/users/verify-email?verificationToken=${emailContent.verificationToken}" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Click Here</a>
                               </td>
                             </tr>
                           </table>
@@ -208,7 +208,7 @@ const htmlTemplates = ({ user, emailContent }) => {
                 <tr>
                   <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
                     <p style="margin: 0;">If that doesn't work, copy and paste the following link in your browser:</p>
-                    <p style="margin: 0;"><a href="http://localhost:4000/api/v1/users/verify-email?verificationToken=${emailContent.verificationToken}" target="_blank">http://localhost:4000/api/v1/users/verify-email?verificationToken=${emailContent.verificationToken}</a></p>
+                    <p style="margin: 0;"><a href="${process.env.BASE_URL}/users/verify-email?verificationToken=${emailContent.verificationToken}" target="_blank">${process.env.BASE_URL}/users/verify-email?verificationToken=${emailContent.verificationToken}</a></p>
                   </td>
                 </tr>
                 <!-- end copy -->
@@ -270,7 +270,7 @@ const htmlTemplates = ({ user, emailContent }) => {
     <h2>Hello ${user.name}</h2>
     <p>Thank you for your registration on Fidia. Please confirm your email by clicking on the following link</p>
     <p>You received this email because we received a request for ${emailContent.action} for your account. If you didn't request ${emailContent.action} you can safely delete this email</p>
-    <a href=http://localhost:4000/api/v1/users/verify-email/${emailContent.verificationToken}> Click here</a>
+    <a href=${process.env.BASE_URL}/users/verify-email/${emailContent.verificationToken}> Click here</a>
     </div>
 `,
   };
@@ -286,7 +286,7 @@ exports.sendEmail = ({ user, emailContent }) =>
   new Promise((resolve, reject) => {
     const data = {
       from: `Fidia ${process.env.SMTP_SENDER}`,
-      to: process.env.SENDER_EMAIL,
+      to: user.email,
       subject: emailContent.subject,
       html: htmlTemplates({
         user,
