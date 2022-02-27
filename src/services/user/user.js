@@ -8,6 +8,7 @@ const UserController = require("../../controller/user");
 const { verifyToken, generateToken } = require("../../utilities/encryption");
 const RootService = require("../_root");
 const appEvent = require("../../events/_config");
+const jwt = require("jsonwebtoken");
 
 /**
  *
@@ -30,10 +31,9 @@ class UserService extends RootService {
    */
 
   async verifyEmail({ request, response, next }) {
+    const { verificationToken } = request.query;
     try {
-      const { verificationToken } = request.query;
       const decode = await verifyToken(verificationToken);
-
       const filter = { conditions: { _id: decode.userId } };
       const result = await this.userController.readRecords(filter);
       if (result && result.failed)
@@ -41,32 +41,33 @@ class UserService extends RootService {
       if (result[0].emailVerified) {
         throw new Error("Kindly login, email is already verified");
       } else {
-        if (decode.exp * 1000 < Date.now()) {
-          // Resend verification link
-          return this.processHTMLResponse({
-            payload: {
-              html: `
-              <h1>Resend Email Confirmation Link</h1>
-              <p>Thank you for your registration on Fidia. Kindly resend your email verification link by clicking on the following link below</p>
-              <a href=${process.env.BASE_URL}/api/v1/users/resend-email-verification?userId=${decode.userId}> Click here</a>
-              </div> 
-            `,
-            },
-          });
-        } else {
-          const updateResult = await this.userController.updateRecords({
-            conditions: { _id: decode.userId },
-            data: {
-              emailVerified: true,
-            },
-          });
-          if (updateResult && updateResult.failed)
-            throw new CustomControllerError(updateResult.error);
-          updateResult["message"] = "Email verified. Kindly login";
-          return this.processUpdateResult({ result: updateResult });
-        }
+        const updateResult = await this.userController.updateRecords({
+          conditions: { _id: decode.userId },
+          data: {
+            emailVerified: true,
+          },
+        });
+        if (updateResult && updateResult.failed)
+          throw new CustomControllerError(updateResult.error);
+        updateResult["message"] = "Email verified. Kindly login";
+        return this.processUpdateResult({ result: updateResult });
       }
     } catch (e) {
+      if ((e.message = "jwt expired")) {
+        const payload = jwt.verify(verificationToken, process.env.SIGNATURE, {
+          ignoreExpiration: true,
+        });
+        return this.processHTMLResponse({
+          payload: {
+            html: `
+            <h1>Resend Email Confirmation Link</h1>
+            <p>Thank you for your registration on Fidia. Kindly resend your email verification link by clicking on the following link below</p>
+            <a href=${process.env.BASE_URL}/api/v1/users/resend-email-verification?userId=${payload.userId}> Click here</a>
+            </div>
+          `,
+          },
+        });
+      }
       const processedError = this.formatError({
         service: this.serviceName,
         error: e,
